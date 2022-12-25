@@ -27,7 +27,7 @@ Future<strava.Food> getFood(String kitchenId, String sessionId) async {
   final body = builder.buildDocument().toXmlString();
 
   final response = await http.post(url, body: body, headers: headers);
-  if (response.statusCode != 200) throw Exception('Failed to fetch food from Strava, status code: ${response.statusCode}');
+  if (response.statusCode != 200) throw Exception('Failed to fetch food from Strava');
 
   final rawXml = xml.XmlDocument.parse(response.body)
       .getElement('SOAP-ENV:Envelope')!

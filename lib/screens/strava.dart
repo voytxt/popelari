@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:popelari/api/common/error.dart';
 import 'package:popelari/api/strava.dart' as strava;
 
 class Strava extends StatefulWidget {
@@ -37,10 +38,7 @@ class _StravaState extends State<Strava> {
             ),
           );
         } else if (snapshot.hasError) {
-          return Text(
-            snapshot.error.toString(),
-            style: TextStyle(color: Theme.of(context).errorColor),
-          );
+          return Error(error: snapshot.error.toString(), stackTrace: snapshot.stackTrace.toString());
         } else {
           return const Center(child: CircularProgressIndicator());
         }

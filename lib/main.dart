@@ -53,12 +53,17 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(currentPageIndex.toString()),
       ),
-      body: [
-        const Overview(),
-        Strava(data: stravaData),
-        const Timetable(),
-        const Grades(),
-      ][currentPageIndex],
+      body: SizedBox.expand(
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: [
+            const Overview(),
+            Strava(data: stravaData),
+            const Timetable(),
+            const Grades(),
+          ][currentPageIndex],
+        ),
+      ),
 
       // M2 for now, M3: https://github.com/flutter/flutter/issues/103551
       drawer: Drawer(
