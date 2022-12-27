@@ -3,14 +3,14 @@ import 'dart:developer';
 import 'package:popelari/api/strava/auth.dart' as auth;
 import 'package:popelari/api/strava/get_food.dart' as get_food;
 
-Future<Food> fetch(String kitchenId, String username, String password) async {
+Future<Food> fetch(String canteenId, String username, String password) async {
   final stopwatch = Stopwatch()..start();
 
   log('Logging in', name: 'STRAVA');
-  final sessionId = await auth.logIn(kitchenId, username, password);
+  final sessionId = await auth.logIn(canteenId, username, password);
 
   log('Getting food', name: 'STRAVA');
-  final foodMap = await get_food.getFood(kitchenId, sessionId);
+  final foodMap = await get_food.getFood(canteenId, sessionId);
 
   log('Finished in ${stopwatch.elapsed.inMilliseconds} ms', name: 'STRAVA');
 

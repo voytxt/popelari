@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart' as xml;
 
-Future<String> logIn(String kitchenId, String username, String password) async {
+Future<String> logIn(String canteenId, String username, String password) async {
   final url = Uri.parse('https://www.strava.cz/istravne/WSiStravneSSL/WSiStravneSSL.WSDL');
   final headers = {
     'content-type': 'text/xml; charset=UTF-8',
@@ -14,7 +14,7 @@ Future<String> logIn(String kitchenId, String username, String password) async {
     builder.element('soap:Body', nest: () {
       builder.element('SOAPSDK4:WSPrihlaseniUzivatele', nest: () {
         builder.attribute('xmlns:SOAPSDK4', 'http://tempuri.org/WSiStravne/message/');
-        builder.element('Zarizeni', nest: kitchenId);
+        builder.element('Zarizeni', nest: canteenId);
         builder.element('UZIVATEL', nest: username);
         builder.element('Heslo', nest: password);
         builder.element('AutUzivatelWS', nest: 'STRAVAAPLIKACE');

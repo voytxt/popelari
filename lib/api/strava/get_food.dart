@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'package:popelari/api/strava.dart' as strava;
 import 'package:xml/xml.dart' as xml;
 
-Future<strava.Food> getFood(String kitchenId, String sessionId) async {
+Future<strava.Food> getFood(String canteenId, String sessionId) async {
   final url = Uri.parse('https://www.strava.cz/istravne/WSiStravneSSL/WSiStravneSSL.WSDL');
   final headers = {
     'content-type': 'text/xml; charset=UTF-8',
@@ -19,7 +19,7 @@ Future<strava.Food> getFood(String kitchenId, String sessionId) async {
         builder.element('AutUzivatelWS', nest: 'STRAVAAPLIKACE');
         builder.element('AutHesloSW', nest: 'yEslwqyotmns8Xgf');
         builder.element('SID', nest: sessionId);
-        builder.element('Konto', nest: kitchenId);
+        builder.element('Konto', nest: canteenId);
         builder.element('Email');
       });
     });

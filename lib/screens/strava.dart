@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:popelari/api/common/error.dart';
 import 'package:popelari/api/strava.dart' as strava;
@@ -7,7 +10,7 @@ import 'package:popelari/api/strava.dart' as strava;
 class Strava extends StatefulWidget {
   const Strava({super.key, required this.data});
 
-  final Future<strava.Food> data;
+  final Future<strava.Food>? data;
 
   @override
   State<Strava> createState() => _StravaState();
@@ -16,34 +19,61 @@ class Strava extends StatefulWidget {
 class _StravaState extends State<Strava> {
   List<int> _groupValues = [];
 
+  final storage = const FlutterSecureStorage();
+  Future<strava.Food>? futureFood;
+
+  @override
+  void initState() {
+    super.initState();
+    futureFood = widget.data;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: widget.data,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          if (_groupValues.isEmpty) _groupValues = List.generate(snapshot.data!.days.length, (index) => 0);
+    if (futureFood == null) {
+      log('User isn\'t logged in', name: 'STRAVA');
 
-          return RefreshIndicator(
-            triggerMode: RefreshIndicatorTriggerMode.anywhere,
-            onRefresh: () {
-              // TODO: implement refresh (probably by having List<Widget> _tiles = [])
-              return Future.delayed(const Duration(seconds: 1));
-            },
-            child: Scrollbar(
-              child: ListView.builder(
-                itemCount: snapshot.data!.days.length,
-                itemBuilder: (context, index) => _buildTile(snapshot.data!, context, index),
+      return Center(
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30.0)),
+          onPressed: () async {
+            strava.Food? food = await Navigator.pushNamed(context, '/auth') as strava.Food;
+
+            setState(() {
+              futureFood = Future<strava.Food>.value(food);
+            });
+          },
+          child: const Text('Log in'),
+        ),
+      );
+    } else {
+      return FutureBuilder(
+        future: futureFood,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            if (_groupValues.isEmpty) _groupValues = List.generate(snapshot.data!.days.length, (index) => 0);
+
+            return RefreshIndicator(
+              triggerMode: RefreshIndicatorTriggerMode.anywhere,
+              onRefresh: () {
+                // TODO: implement refresh (probably by having List<Widget> _tiles = [])
+                return Future.delayed(const Duration(seconds: 1));
+              },
+              child: Scrollbar(
+                child: ListView.builder(
+                  itemCount: snapshot.data!.days.length,
+                  itemBuilder: (context, index) => _buildTile(snapshot.data!, context, index),
+                ),
               ),
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return Error(error: snapshot.error.toString(), stackTrace: snapshot.stackTrace.toString());
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
-      },
-    );
+            );
+          } else if (snapshot.hasError) {
+            return Error(error: snapshot.error.toString(), stackTrace: snapshot.stackTrace.toString());
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
+      );
+    }
   }
 
   Card _buildTile(strava.Food data, BuildContext context, int index) {

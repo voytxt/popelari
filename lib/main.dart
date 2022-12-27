@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:popelari/api/strava.dart' as strava;
+import 'package:popelari/screens/auth.dart';
 import 'package:popelari/screens/grades.dart';
 import 'package:popelari/screens/overview.dart';
 import 'package:popelari/screens/strava.dart';
@@ -16,7 +18,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Popeláři',
-      home: const MyHomePage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const MyHomePage(),
+        '/auth': (context) => const Auth(),
+      },
       theme: ThemeData(
         useMaterial3: true,
         // brightness: Brightness.dark,
@@ -34,15 +40,26 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late Future<strava.Food> stravaData;
+  Future<strava.Food>? stravaData;
   int currentPageIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => getStravaData());
+  }
 
-    // TODO: add actual auth to the app instead of this
-    stravaData = strava.fetch('<kitchen id>', '<username>', '<password>');
+  void getStravaData() async {
+    const storage = FlutterSecureStorage();
+    final canteenId = await storage.read(key: 'canteenId');
+    final username = await storage.read(key: 'username');
+    final password = await storage.read(key: 'password');
+
+    if (canteenId != null && username != null && password != null) {
+      stravaData = strava.fetch(canteenId, username, password);
+    } else {
+      stravaData = null;
+    }
   }
 
   @override
