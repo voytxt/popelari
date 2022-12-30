@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:popelari/api/strava.dart' as strava;
 import 'package:popelari/screens/auth.dart';
+import 'package:popelari/screens/dev_drawer.dart';
 import 'package:popelari/screens/grades.dart';
 import 'package:popelari/screens/overview.dart';
 import 'package:popelari/screens/strava.dart';
@@ -91,30 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
 
       // M2 for now, M3: https://github.com/flutter/flutter/issues/103551
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-              ),
-              child: Text(
-                'Popeláři',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-            ListTile(
-              title: const Text('Item 1'),
-              onTap: () {},
-            ),
-            ListTile(
-              title: const Text('Item 2'),
-              onTap: () {},
-            ),
-          ],
-        ),
-      ),
+      drawer: const DevDrawer(),
 
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (index) {
