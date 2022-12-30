@@ -10,37 +10,30 @@ import 'package:popelari/screens/overview.dart';
 import 'package:popelari/screens/strava.dart';
 import 'package:popelari/screens/timetable.dart';
 
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Popeláři',
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const MyHomePage(),
-        '/auth': (context) => const Auth(),
-      },
-      theme: ThemeData(
-        useMaterial3: true,
-        // brightness: Brightness.dark,
-        colorSchemeSeed: Colors.amber,
-      ),
-    );
-  }
+void main() {
+  runApp(MaterialApp(
+    title: 'Popeláři',
+    initialRoute: '/',
+    routes: {
+      '/': (context) => const Main(),
+      '/auth': (context) => const Auth(),
+    },
+    theme: ThemeData(
+      useMaterial3: true,
+      // brightness: Brightness.dark,
+      colorSchemeSeed: Colors.amber,
+    ),
+  ));
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class Main extends StatefulWidget {
+  const Main({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<Main> createState() => _MainState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MainState extends State<Main> {
   int currentPageIndex = 0;
 
   @override
