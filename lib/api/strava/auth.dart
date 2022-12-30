@@ -28,13 +28,17 @@ Future<String> logIn(String canteenId, String username, String password) async {
   final response = await http.post(url, body: body, headers: headers);
   if (response.statusCode != 200) throw Exception('Failed to log in to Strava, status code: ${response.statusCode}');
 
-  final sessionId = xml.XmlDocument.parse(response.body)
+  final responseXml = xml.XmlDocument.parse(response.body)
       .getElement('SOAP-ENV:Envelope')!
       .getElement('SOAP-ENV:Body')!
-      .getElement('SOAPSDK4:WSPrihlaseniUzivateleResponse')!
-      .getElement('Result')!
-      .innerText
-      .split(';')[0];
+      .getElement('SOAPSDK4:WSPrihlaseniUzivateleResponse')!;
+
+  final sessionId = responseXml.getElement('Result')!.innerText.split(';')[0];
+
+  if (sessionId.isEmpty) {
+    final error = responseXml.getElement('Vysledek')!.innerText;
+    throw Exception('Failed to log in to Strava, $error');
+  }
 
   return sessionId;
 }

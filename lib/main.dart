@@ -40,7 +40,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<strava.Food>? stravaData;
   int currentPageIndex = 0;
 
   @override
@@ -49,16 +48,16 @@ class _MyHomePageState extends State<MyHomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) => getStravaData());
   }
 
-  void getStravaData() async {
+  Future<Future<strava.Food>?> getStravaData() async {
     const storage = FlutterSecureStorage();
     final canteenId = await storage.read(key: 'canteenId');
     final username = await storage.read(key: 'username');
     final password = await storage.read(key: 'password');
 
     if (canteenId != null && username != null && password != null) {
-      stravaData = strava.fetch(canteenId, username, password);
+      return strava.fetch(canteenId, username, password);
     } else {
-      stravaData = null;
+      return null;
     }
   }
 
@@ -75,7 +74,16 @@ class _MyHomePageState extends State<MyHomePage> {
           padding: const EdgeInsets.all(12.0),
           child: [
             const Overview(),
-            Strava(data: stravaData),
+            FutureBuilder(
+              future: getStravaData(),
+              builder: ((context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.waiting) {
+                  return Strava(data: snapshot.data);
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
+              }),
+            ),
             const Timetable(),
             const Grades(),
           ][currentPageIndex],

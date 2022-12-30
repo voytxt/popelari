@@ -20,7 +20,7 @@ class _StravaState extends State<Strava> {
   List<int> _groupValues = [];
 
   final storage = const FlutterSecureStorage();
-  Future<strava.Food>? futureFood;
+  late Future<strava.Food>? futureFood;
 
   @override
   void initState() {
@@ -33,19 +33,7 @@ class _StravaState extends State<Strava> {
     if (futureFood == null) {
       log('User isn\'t logged in', name: 'STRAVA');
 
-      return Center(
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30.0)),
-          onPressed: () async {
-            strava.Food? food = await Navigator.pushNamed(context, '/auth') as strava.Food;
-
-            setState(() {
-              futureFood = Future<strava.Food>.value(food);
-            });
-          },
-          child: const Text('Log in'),
-        ),
-      );
+      return Center(child: _getLogInButton(context));
     } else {
       return FutureBuilder(
         future: futureFood,
@@ -67,13 +55,33 @@ class _StravaState extends State<Strava> {
               ),
             );
           } else if (snapshot.hasError) {
-            return Error(error: snapshot.error.toString(), stackTrace: snapshot.stackTrace.toString());
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Error(error: snapshot.error.toString(), stackTrace: snapshot.stackTrace.toString()),
+                _getLogInButton(context),
+              ],
+            );
           } else {
             return const Center(child: CircularProgressIndicator());
           }
         },
       );
     }
+  }
+
+  Widget _getLogInButton(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30.0)),
+      onPressed: () async {
+        strava.Food? food = await Navigator.pushNamed(context, '/auth') as strava.Food;
+
+        setState(() {
+          futureFood = Future<strava.Food>.value(food);
+        });
+      },
+      child: const Text('Log in'),
+    );
   }
 
   Card _buildTile(strava.Food data, BuildContext context, int index) {
