@@ -81,17 +81,19 @@ class _AuthState extends State<Auth> {
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   try {
-                    final food = await strava.fetch(canteenIdController.text, usernameController.text, passwordController.text);
+                    final food = await strava.fetch(
+                      canteenIdController.text,
+                      username: usernameController.text,
+                      password: passwordController.text,
+                    );
 
                     if (rememberMe) {
-                      log('Saving auth details to flutter_secure_storage', name: 'STRAVA');
-
                       const storage = FlutterSecureStorage();
-                      await storage.write(key: 'canteenId', value: canteenIdController.text);
                       await storage.write(key: 'username', value: usernameController.text);
                       await storage.write(key: 'password', value: passwordController.text);
                     }
 
+                    // TODO: fix warning
                     Navigator.pop(context, food);
                   } catch (error) {
                     log('Oops, wrong credentials', name: 'STRAVA');

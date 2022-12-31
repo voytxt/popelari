@@ -1,8 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:popelari/api/strava.dart' as strava;
 import 'package:popelari/screens/auth.dart';
 import 'package:popelari/screens/dev_drawer.dart';
 import 'package:popelari/screens/grades.dart';
@@ -37,25 +35,6 @@ class _MainState extends State<Main> {
   int currentPageIndex = 0;
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => getStravaData());
-  }
-
-  Future<Future<strava.Food>?> getStravaData() async {
-    const storage = FlutterSecureStorage();
-    final canteenId = await storage.read(key: 'canteenId');
-    final username = await storage.read(key: 'username');
-    final password = await storage.read(key: 'password');
-
-    if (canteenId != null && username != null && password != null) {
-      return strava.fetch(canteenId, username, password);
-    } else {
-      return null;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     log('Rebuilding UI', name: 'FLUTTER');
 
@@ -68,16 +47,7 @@ class _MainState extends State<Main> {
           padding: const EdgeInsets.all(12.0),
           child: [
             const Overview(),
-            FutureBuilder(
-              future: getStravaData(),
-              builder: ((context, snapshot) {
-                if (snapshot.connectionState != ConnectionState.waiting) {
-                  return Strava(data: snapshot.data);
-                } else {
-                  return const Center(child: CircularProgressIndicator());
-                }
-              }),
-            ),
+            const Strava(),
             const Timetable(),
             const Grades(),
           ][currentPageIndex],

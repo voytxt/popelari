@@ -8,9 +8,7 @@ import 'package:popelari/api/common/error.dart';
 import 'package:popelari/api/strava.dart' as strava;
 
 class Strava extends StatefulWidget {
-  const Strava({super.key, required this.data});
-
-  final Future<strava.Food>? data;
+  const Strava({super.key});
 
   @override
   State<Strava> createState() => _StravaState();
@@ -19,97 +17,142 @@ class Strava extends StatefulWidget {
 class _StravaState extends State<Strava> {
   List<int> _groupValues = [];
 
-  final storage = const FlutterSecureStorage();
-  late Future<strava.Food>? futureFood;
+  late Future<strava.Food?> _futureFood;
 
   @override
   void initState() {
     super.initState();
-    futureFood = widget.data;
+    _futureFood = _getData();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (futureFood == null) {
-      log('User isn\'t logged in', name: 'STRAVA');
+    return FutureBuilder(
+      future: _futureFood,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return _buildLoading();
+        }
 
-      return Center(child: _getLogInButton(context));
-    } else {
-      return FutureBuilder(
-        future: futureFood,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (_groupValues.isEmpty) _groupValues = List.generate(snapshot.data!.days.length, (index) => 0);
+        if (snapshot.hasError) {
+          return _buildError(snapshot.error!, snapshot.stackTrace!);
+        }
 
-            return RefreshIndicator(
-              triggerMode: RefreshIndicatorTriggerMode.anywhere,
-              onRefresh: () {
-                // TODO: implement refresh (probably by having List<Widget> _tiles = [])
-                return Future.delayed(const Duration(seconds: 1));
-              },
-              child: Scrollbar(
-                child: ListView.builder(
-                  itemCount: snapshot.data!.days.length,
-                  itemBuilder: (context, index) => _buildTile(snapshot.data!, context, index),
-                ),
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Error(error: snapshot.error.toString(), stackTrace: snapshot.stackTrace.toString()),
-                _getLogInButton(context),
-              ],
-            );
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      );
-    }
-  }
+        if (snapshot.hasData) {
+          return _buildData(snapshot.data!);
+        }
 
-  Widget _getLogInButton(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30.0)),
-      onPressed: () async {
-        strava.Food? food = await Navigator.pushNamed(context, '/auth') as strava.Food;
-
-        setState(() {
-          futureFood = Future<strava.Food>.value(food);
-        });
+        return Center(child: _buildLogInButton(context));
       },
-      child: const Text('Log in'),
     );
   }
 
-  Card _buildTile(strava.Food data, BuildContext context, int index) {
-    final day = data.days[index];
+  Future<strava.Food?> _getData() async {
+    log('Started', name: 'STRAVA');
 
-    final tiles = day.courses.mapIndexed((courseIndex, course) {
-      return RadioListTile(
-        key: GlobalKey(),
-        title: Text(course.name),
-        subtitle: Text(course.type),
-        value: courseIndex,
-        groupValue: _groupValues[index],
-        onChanged: (value) {
-          setState(() {
-            _groupValues[index] = courseIndex;
-          });
-        },
-      );
-    }).toList();
+    const storage = FlutterSecureStorage();
+    final canteenId = await storage.read(key: 'canteenId');
+    final sessionId = await storage.read(key: 'sessionId');
 
-    return Card(
-      child: Column(children: [
-        Text(
-          DateFormat('EEEE d. M.').format(day.date),
-          style: Theme.of(context).textTheme.titleLarge,
+    if (canteenId == null || sessionId == null) {
+      log('Finished, session id (or canteen id) is null', name: 'STRAVA');
+      return null;
+    }
+
+    try {
+      return await strava.fetch(canteenId, sessionId: sessionId);
+    } catch (_) {
+      log('Invalid session id (or canteen id), generating a new one', name: 'STRAVA');
+
+      final username = await storage.read(key: 'username');
+      final password = await storage.read(key: 'password');
+
+      if (username == null || password == null) return null;
+
+      try {
+        return await strava.fetch(canteenId, username: username, password: password);
+      } catch (_) {
+        log('Finished, invalid credentials', name: 'STRAVA');
+        return null;
+      }
+    }
+  }
+
+  Widget _buildLoading() {
+    return const Center(child: CircularProgressIndicator());
+  }
+
+  Widget _buildError(Object error, StackTrace stackTrace) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Error(error: error.toString(), stackTrace: stackTrace.toString()),
+        _buildLogInButton(context),
+      ],
+    );
+  }
+
+  Widget _buildData(strava.Food data) {
+    if (_groupValues.isEmpty) {
+      _groupValues = List.generate(data.days.length, (index) => 0);
+    }
+
+    return RefreshIndicator(
+      triggerMode: RefreshIndicatorTriggerMode.anywhere,
+      onRefresh: () {
+        // TODO: implement refresh (probably by having List<Widget> _tiles = [])
+        return Future.delayed(const Duration(seconds: 1));
+      },
+      child: Scrollbar(
+        child: ListView.builder(
+          itemCount: data.days.length,
+          itemBuilder: (context, index) {
+            final day = data.days[index];
+
+            final tiles = day.courses.mapIndexed((courseIndex, course) {
+              return RadioListTile(
+                key: GlobalKey(),
+                title: Text(course.name),
+                subtitle: Text(course.type),
+                value: courseIndex,
+                groupValue: _groupValues[index],
+                onChanged: (value) {
+                  setState(() {
+                    _groupValues[index] = courseIndex;
+                  });
+                },
+              );
+            }).toList();
+
+            return Card(
+              child: Column(children: [
+                Text(
+                  DateFormat('EEEE d. M.').format(day.date),
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                Column(children: tiles),
+              ]),
+            );
+          },
         ),
-        Column(children: tiles),
-      ]),
+      ),
+    );
+  }
+
+  Widget _buildLogInButton(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30.0)),
+      onPressed: () async {
+        // TODO: fix error / warnings
+        strava.Food? food = await Navigator.pushNamed(context, '/auth') as strava.Food?;
+
+        if (food != null) {
+          setState(() {
+            _futureFood = Future<strava.Food>.value(food);
+          });
+        }
+      },
+      child: const Text('Log in'),
     );
   }
 }
