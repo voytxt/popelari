@@ -15,17 +15,17 @@ class Auth extends StatefulWidget {
 class _AuthState extends State<Auth> {
   final _formKey = GlobalKey<FormState>();
 
-  final canteenIdController = TextEditingController();
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
+  final _canteenIdController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
 
-  bool rememberMe = false;
+  bool _rememberMe = false;
 
   @override
   void dispose() {
-    canteenIdController.dispose();
-    usernameController.dispose();
-    passwordController.dispose();
+    _canteenIdController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -49,7 +49,7 @@ class _AuthState extends State<Auth> {
           key: _formKey,
           child: Column(children: [
             TextFormField(
-              controller: canteenIdController,
+              controller: _canteenIdController,
               decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'Canteen number'),
               validator: (value) => _validate(value, 'canteen number'),
               keyboardType: TextInputType.number,
@@ -57,13 +57,13 @@ class _AuthState extends State<Auth> {
             ),
             const SizedBox(height: 10.0),
             TextFormField(
-              controller: usernameController,
+              controller: _usernameController,
               decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'Username'),
               validator: (value) => _validate(value, 'username'),
             ),
             const SizedBox(height: 10.0),
             TextFormField(
-              controller: passwordController,
+              controller: _passwordController,
               decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'Password'),
               validator: (value) => _validate(value, 'password'),
               obscureText: true,
@@ -71,8 +71,8 @@ class _AuthState extends State<Auth> {
             const SizedBox(height: 10.0),
             CheckboxListTile(
               title: const Text('Remember me'),
-              value: rememberMe,
-              onChanged: (value) => setState(() => rememberMe = value!),
+              value: _rememberMe,
+              onChanged: (value) => setState(() => _rememberMe = value!),
             ),
             const SizedBox(height: 20.0),
             ElevatedButton(
@@ -82,19 +82,18 @@ class _AuthState extends State<Auth> {
                 if (_formKey.currentState!.validate()) {
                   try {
                     final food = await strava.fetch(
-                      canteenIdController.text,
-                      username: usernameController.text,
-                      password: passwordController.text,
+                      _canteenIdController.text,
+                      username: _usernameController.text,
+                      password: _passwordController.text,
                     );
 
-                    if (rememberMe) {
+                    if (_rememberMe) {
                       const storage = FlutterSecureStorage();
-                      await storage.write(key: 'username', value: usernameController.text);
-                      await storage.write(key: 'password', value: passwordController.text);
+                      await storage.write(key: 'username', value: _usernameController.text);
+                      await storage.write(key: 'password', value: _passwordController.text);
                     }
 
-                    // TODO: fix warning
-                    Navigator.pop(context, food);
+                    if (mounted) Navigator.pop(context, food);
                   } catch (error) {
                     log('Oops, wrong credentials', name: 'STRAVA');
 

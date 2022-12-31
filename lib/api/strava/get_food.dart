@@ -36,8 +36,6 @@ Future<strava.Food> getFood(String canteenId, String sessionId) async {
       .getElement('Result')!
       .innerText;
 
-  // log('rawXml: ${xml.XmlDocument.parse(rawXml).toString()}');
-
   final coursesXML = xml.XmlDocument.parse(rawXml).getElement('VFPData')!.findElements('rozpisobjednavek');
 
   strava.Food food = strava.Food([]);

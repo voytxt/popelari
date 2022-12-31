@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 class Error extends StatelessWidget {
@@ -11,8 +9,6 @@ class Error extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextStyle red(TextStyle textStyle) => textStyle.copyWith(color: Theme.of(context).errorColor);
-
-    log(stackTrace);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,

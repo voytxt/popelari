@@ -11,7 +11,7 @@ class DevDrawer extends StatefulWidget {
 }
 
 class _DevDrawerState extends State<DevDrawer> {
-  final storage = const FlutterSecureStorage();
+  final _storage = const FlutterSecureStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class _DevDrawerState extends State<DevDrawer> {
           ListTile(
             title: const Text('View storage'),
             onTap: () async {
-              final content = await storage.readAll();
+              final content = await _storage.readAll();
               showDialog(
                 context: context,
                 builder: (_) => AlertDialog(
@@ -43,7 +43,7 @@ class _DevDrawerState extends State<DevDrawer> {
           ListTile(
             title: const Text('Clear storage'),
             onTap: () async {
-              await storage.deleteAll();
+              await _storage.deleteAll();
               showDialog(
                 context: context,
                 builder: (_) => const AlertDialog(
