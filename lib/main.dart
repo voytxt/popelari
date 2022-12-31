@@ -40,7 +40,9 @@ class _MainState extends State<Main> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(currentPageIndex.toString()),
+        title: Text(
+          'Popeláři ~ ${['Overview', 'Strava', 'Timetable', 'Grades'][currentPageIndex]}',
+        ),
       ),
       body: SizedBox.expand(
         child: Padding(
