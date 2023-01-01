@@ -1,11 +1,11 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:popelari/screens/auth.dart';
 import 'package:popelari/screens/dev_drawer.dart';
 import 'package:popelari/screens/grades.dart';
 import 'package:popelari/screens/overview.dart';
 import 'package:popelari/screens/strava.dart';
+import 'package:popelari/screens/strava/auth.dart';
 import 'package:popelari/screens/timetable.dart';
 
 void main() {
@@ -14,7 +14,7 @@ void main() {
     initialRoute: '/',
     routes: {
       '/': (context) => const Main(),
-      '/auth': (context) => const Auth(),
+      '/strava/auth': (context) => const Auth(),
     },
     theme: ThemeData(
       useMaterial3: true,

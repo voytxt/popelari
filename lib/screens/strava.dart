@@ -143,7 +143,7 @@ class _StravaState extends State<Strava> {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30.0)),
       onPressed: () async {
-        strava.Food? food = await Navigator.pushNamed(context, '/auth') as strava.Food?;
+        strava.Food? food = await Navigator.pushNamed(context, '/strava/auth') as strava.Food?;
 
         if (food != null) {
           setState(() {
