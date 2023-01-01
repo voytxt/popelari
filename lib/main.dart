@@ -32,7 +32,7 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
-  int currentPageIndex = 0;
+  int _currentPageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class _MainState extends State<Main> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Popeláři ~ ${['Overview', 'Strava', 'Timetable', 'Grades'][currentPageIndex]}',
+          'Popeláři ~ ${['Overview', 'Strava', 'Timetable', 'Grades'][_currentPageIndex]}',
         ),
       ),
       body: SizedBox.expand(
@@ -52,7 +52,7 @@ class _MainState extends State<Main> {
             const Strava(),
             const Timetable(),
             const Grades(),
-          ][currentPageIndex],
+          ][_currentPageIndex],
         ),
       ),
 
@@ -62,10 +62,10 @@ class _MainState extends State<Main> {
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (index) {
           setState(() {
-            currentPageIndex = index;
+            _currentPageIndex = index;
           });
         },
-        selectedIndex: currentPageIndex,
+        selectedIndex: _currentPageIndex,
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         destinations: const [
           NavigationDestination(label: 'Overview', icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home)),
