@@ -99,9 +99,12 @@ class _StravaState extends State<Strava> {
 
     return RefreshIndicator(
       triggerMode: RefreshIndicatorTriggerMode.anywhere,
-      onRefresh: () {
-        // TODO: implement refresh (probably by having List<Widget> _tiles = [])
-        return Future.delayed(const Duration(seconds: 1));
+      onRefresh: () async {
+        final food = await _getData();
+
+        setState(() {
+          _futureFood = Future.value(food);
+        });
       },
       child: Scrollbar(
         child: ListView.builder(
