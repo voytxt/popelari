@@ -4,8 +4,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
-import 'package:popelari/api/common/error.dart';
 import 'package:popelari/api/strava.dart' as strava;
+import 'package:popelari/screens/common/error.dart';
 
 class Strava extends StatefulWidget {
   const Strava({super.key});
