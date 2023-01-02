@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
@@ -94,7 +93,7 @@ class _StravaState extends State<Strava> {
 
   Widget _buildData(strava.Food data) {
     if (_groupValues.isEmpty) {
-      _groupValues = List.generate(data.days.length, (index) => 0);
+      _groupValues = data.days.map((day) => day.orderedFoodIndex).toList();
     }
 
     return RefreshIndicator(
@@ -112,18 +111,22 @@ class _StravaState extends State<Strava> {
           itemBuilder: (context, index) {
             final day = data.days[index];
 
-            final tiles = day.courses.mapIndexed((courseIndex, course) {
+            final tiles = day.courses.map((course) {
+              if (course.index == null) {
+                return ListTile(
+                  title: Text(course.name),
+                  subtitle: Text(course.type),
+                  leading: const SizedBox.shrink(),
+                );
+              }
+
               return RadioListTile(
                 key: GlobalKey(),
                 title: Text(course.name),
                 subtitle: Text(course.type),
-                value: courseIndex,
+                value: course.index!,
                 groupValue: _groupValues[index],
-                onChanged: (value) {
-                  setState(() {
-                    _groupValues[index] = courseIndex;
-                  });
-                },
+                onChanged: (_) => setState(() => _groupValues[index] = course.index!),
               );
             }).toList();
 

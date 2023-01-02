@@ -36,13 +36,15 @@ class Food {
 class Day {
   final DateTime date;
   final List<Course> courses;
+  late int orderedFoodIndex;
 
-  Day(this.date, this.courses);
+  Day(this.date, this.courses, this.orderedFoodIndex);
 }
 
 class Course {
   final String type;
   final String name;
+  final int? index;
 
-  Course(this.type, this.name);
+  Course(this.type, this.name, this.index);
 }

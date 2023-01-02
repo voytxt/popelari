@@ -15,12 +15,11 @@ Future<strava.Food> getFood(String canteenId, String sessionId) async {
     builder.element('soap:Body', nest: () {
       builder.element('SOAPSDK4:WSRozpisJObjednavek', nest: () {
         builder.attribute('xmlns:SOAPSDK4', 'http://tempuri.org/WSiStravne/message/');
-        builder.element('Jazyk', nest: 'CS');
         builder.element('AutUzivatelWS', nest: 'STRAVAAPLIKACE');
         builder.element('AutHesloSW', nest: 'yEslwqyotmns8Xgf');
         builder.element('SID', nest: sessionId);
         builder.element('Konto', nest: canteenId);
-        builder.element('Email');
+        builder.element('Jazyk');
       });
     });
   });
@@ -36,22 +35,28 @@ Future<strava.Food> getFood(String canteenId, String sessionId) async {
       .getElement('Result')!
       .innerText;
 
-  final coursesXML = xml.XmlDocument.parse(rawXml).getElement('VFPData')!.findElements('rozpisobjednavek');
+  final coursesXml = xml.XmlDocument.parse(rawXml).getElement('VFPData')!.findElements('rozpisobjednavek');
 
   strava.Food food = strava.Food([]);
 
-  for (final courseXML in coursesXML) {
-    final date = DateTime.parse(courseXML.getElement('datum')!.innerText);
-    final name = courseXML.getElement('nazevjidelnicku')!.innerText;
+  for (final courseXml in coursesXml) {
+    final date = DateTime.parse(courseXml.getElement('datum')!.innerText);
+    final type = courseXml.getElement('popisdruhu')!.innerText;
+    final name = courseXml.getElement('nazevjidelnicku')!.innerText;
+    final index = int.tryParse(courseXml.getElement('druh')!.innerText); // null if food can't be ordered
+    final isOrdered = courseXml.getElement('pocet')!.innerText == '1';
 
-    final course = strava.Course('Lunch', name);
+    final course = strava.Course(type, name, index);
+
     final dayIndex = food.days.indexWhere((element) => element.date == date);
 
     if (dayIndex == -1) {
-      food.days.add(strava.Day(date, [course]));
+      food.days.add(strava.Day(date, [course], -1));
     } else {
       food.days[dayIndex].courses.add(course);
     }
+
+    if (isOrdered) food.days[dayIndex].orderedFoodIndex = index!;
   }
 
   return food;
