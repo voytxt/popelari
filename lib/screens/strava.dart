@@ -124,7 +124,6 @@ class _StravaState extends State<Strava> {
               }
 
               return RadioListTile(
-                key: GlobalKey(),
                 title: Text(course.name),
                 subtitle: Text(course.type),
                 value: course.index!,
