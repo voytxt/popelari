@@ -33,6 +33,7 @@ class Main extends StatefulWidget {
 
 class _MainState extends State<Main> {
   int _currentPageIndex = 0;
+  bool showFAB = false;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +50,7 @@ class _MainState extends State<Main> {
           padding: const EdgeInsets.all(12.0),
           child: [
             const Overview(),
-            const Strava(),
+            Strava(showFAB: () => setState(() => showFAB = true)),
             const Timetable(),
             const Grades(),
           ][_currentPageIndex],
@@ -59,10 +60,20 @@ class _MainState extends State<Main> {
       // M2 for now, M3: https://github.com/flutter/flutter/issues/103551
       drawer: const DevDrawer(),
 
+      floatingActionButton: showFAB
+          ? FloatingActionButton.extended(
+              label: const Text('Send'),
+              icon: const Icon(Icons.check),
+              onPressed: () {},
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (index) {
           setState(() {
             _currentPageIndex = index;
+            showFAB = false;
           });
         },
         selectedIndex: _currentPageIndex,

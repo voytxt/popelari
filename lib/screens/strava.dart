@@ -7,7 +7,9 @@ import 'package:popelari/api/strava.dart' as strava;
 import 'package:popelari/screens/common/error.dart';
 
 class Strava extends StatefulWidget {
-  const Strava({super.key});
+  const Strava({super.key, required this.showFAB});
+
+  final Function() showFAB;
 
   @override
   State<Strava> createState() => _StravaState();
@@ -15,6 +17,7 @@ class Strava extends StatefulWidget {
 
 class _StravaState extends State<Strava> {
   List<int> _groupValues = [];
+  bool newFoodOrdered = false;
 
   late Future<strava.Food?> _futureFood;
 
@@ -126,7 +129,13 @@ class _StravaState extends State<Strava> {
                 subtitle: Text(course.type),
                 value: course.index!,
                 groupValue: _groupValues[index],
-                onChanged: (_) => setState(() => _groupValues[index] = course.index!),
+                onChanged: (_) {
+                  setState(() {
+                    _groupValues[index] = course.index!;
+                    newFoodOrdered = true;
+                  });
+                  widget.showFAB();
+                },
               );
             }).toList();
 
