@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:popelari/screens/dev_drawer.dart';
 import 'package:popelari/screens/grades.dart';
@@ -37,8 +35,6 @@ class _MainState extends State<Main> {
 
   @override
   Widget build(BuildContext context) {
-    log('Rebuilding UI', name: 'FLUTTER');
-
     return Scaffold(
       appBar: AppBar(
         title: Text(

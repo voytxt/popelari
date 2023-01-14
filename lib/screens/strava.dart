@@ -1,9 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:popelari/api/strava.dart' as strava;
+import 'package:popelari/common/logger.dart';
+import 'package:popelari/common/storage.dart';
 import 'package:popelari/screens/common/error.dart';
 
 class Strava extends StatefulWidget {
@@ -50,21 +49,17 @@ class _StravaState extends State<Strava> {
   }
 
   Future<strava.Food?> _getData() async {
-    log('Started', name: 'STRAVA');
-
-    const storage = FlutterSecureStorage();
     final canteenId = await storage.read(key: 'canteenId');
     final sessionId = await storage.read(key: 'sessionId');
 
     if (canteenId == null || sessionId == null) {
-      log('Finished, session id (or canteen id) is null', name: 'STRAVA');
       return null;
     }
 
     try {
       return await strava.fetch(canteenId, sessionId: sessionId);
     } catch (_) {
-      log('Invalid session id (or canteen id), generating a new one', name: 'STRAVA');
+      logger.e('Invalid session id (or canteen id), generating a new one');
 
       final username = await storage.read(key: 'username');
       final password = await storage.read(key: 'password');
@@ -74,7 +69,7 @@ class _StravaState extends State<Strava> {
       try {
         return await strava.fetch(canteenId, username: username, password: password);
       } catch (_) {
-        log('Finished, invalid credentials', name: 'STRAVA');
+        logger.e('Invalid credentials');
         return null;
       }
     }

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:popelari/common/storage.dart';
 
 class DevDrawer extends StatefulWidget {
   const DevDrawer({super.key});
@@ -11,8 +11,6 @@ class DevDrawer extends StatefulWidget {
 }
 
 class _DevDrawerState extends State<DevDrawer> {
-  final _storage = const FlutterSecureStorage();
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -31,7 +29,7 @@ class _DevDrawerState extends State<DevDrawer> {
           ListTile(
             title: const Text('View storage'),
             onTap: () async {
-              final content = await _storage.readAll();
+              final content = await storage.readAll();
               showDialog(
                 context: context,
                 builder: (_) => AlertDialog(
@@ -43,7 +41,7 @@ class _DevDrawerState extends State<DevDrawer> {
           ListTile(
             title: const Text('Clear storage'),
             onTap: () async {
-              await _storage.deleteAll();
+              await storage.deleteAll();
               showDialog(
                 context: context,
                 builder: (_) => const AlertDialog(

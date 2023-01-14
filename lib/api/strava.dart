@@ -1,28 +1,29 @@
-import 'dart:developer';
-
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:popelari/api/strava/auth.dart' as auth;
-import 'package:popelari/api/strava/get_food.dart' as get_food;
+import 'package:http/http.dart' show Client;
+import 'package:popelari/api/strava/auth.dart';
+import 'package:popelari/api/strava/get_food.dart';
+import 'package:popelari/common/logger.dart';
+import 'package:popelari/common/storage.dart';
 
 Future<Food> fetch(String canteenId, {String? username, String? password, String? sessionId}) async {
-  log('Started', name: 'STRAVA API');
+  final client = Client();
+  Food? food;
 
-  final stopwatch = Stopwatch()..start();
+  try {
+    await storage.write(key: 'canteenId', value: canteenId);
 
-  const storage = FlutterSecureStorage();
-  await storage.write(key: 'canteenId', value: canteenId);
+    if (sessionId == null) {
+      sessionId = await logIn(client, canteenId, username!, password!);
 
-  if (sessionId == null) {
-    log('Logging in', name: 'STRAVA API');
-    sessionId = await auth.logIn(canteenId, username!, password!);
+      await storage.write(key: 'sessionId', value: sessionId);
+    }
 
-    await storage.write(key: 'sessionId', value: sessionId);
+    food = await getFood(client, canteenId, sessionId);
+  } catch (error) {
+    logger.e(error);
+    rethrow;
+  } finally {
+    client.close();
   }
-
-  log('Getting food', name: 'STRAVA API');
-  final food = await get_food.getFood(canteenId, sessionId);
-
-  log('Finished in ${stopwatch.elapsed.inMilliseconds} ms', name: 'STRAVA API');
 
   return food;
 }

@@ -1,10 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:popelari/api/strava.dart' as strava;
+import 'package:popelari/common/storage.dart';
 
 class Auth extends StatefulWidget {
   const Auth({super.key});
@@ -110,8 +108,6 @@ class _AuthState extends State<Auth> {
         password: _passwordController.text,
       );
     } catch (error) {
-      log('Oops, wrong credentials', name: 'STRAVA');
-
       return showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -134,7 +130,6 @@ class _AuthState extends State<Auth> {
     }
 
     if (_rememberMe) {
-      const storage = FlutterSecureStorage();
       await storage.write(key: 'username', value: _usernameController.text);
       await storage.write(key: 'password', value: _passwordController.text);
     }
