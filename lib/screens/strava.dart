@@ -6,9 +6,7 @@ import 'package:popelari/common/storage.dart';
 import 'package:popelari/screens/common/error.dart';
 
 class Strava extends StatefulWidget {
-  const Strava({super.key, required this.showFAB});
-
-  final Function() showFAB;
+  const Strava({super.key});
 
   @override
   State<Strava> createState() => _StravaState();
@@ -16,7 +14,7 @@ class Strava extends StatefulWidget {
 
 class _StravaState extends State<Strava> {
   List<int> _groupValues = [];
-  bool newFoodOrdered = false;
+  bool _showFab = false;
 
   late Future<strava.Food?> _futureFood;
 
@@ -94,57 +92,67 @@ class _StravaState extends State<Strava> {
       _groupValues = data.days.map((day) => day.orderedFoodIndex).toList();
     }
 
-    return RefreshIndicator(
-      triggerMode: RefreshIndicatorTriggerMode.anywhere,
-      onRefresh: () async {
-        final food = await _getData();
+    return Stack(
+      alignment: AlignmentDirectional.bottomCenter,
+      children: [
+        RefreshIndicator(
+          triggerMode: RefreshIndicatorTriggerMode.anywhere,
+          onRefresh: () async {
+            final food = await _getData();
 
-        setState(() {
-          _futureFood = Future.value(food);
-        });
-      },
-      child: Scrollbar(
-        child: ListView.builder(
-          itemCount: data.days.length,
-          itemBuilder: (context, index) {
-            final day = data.days[index];
-
-            final tiles = day.courses.map((course) {
-              if (course.index == null) {
-                return ListTile(
-                  title: Text(course.name),
-                  subtitle: Text(course.type),
-                  leading: const SizedBox.shrink(),
-                );
-              }
-
-              return RadioListTile(
-                title: Text(course.name),
-                subtitle: Text(course.type),
-                value: course.index!,
-                groupValue: _groupValues[index],
-                onChanged: (_) {
-                  setState(() {
-                    _groupValues[index] = course.index!;
-                    newFoodOrdered = true;
-                  });
-                  widget.showFAB();
-                },
-              );
-            }).toList();
-
-            return Card(
-              child: Column(children: [
-                Text(
-                  DateFormat('EEEE d. M.').format(day.date),
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                Column(children: tiles),
-              ]),
-            );
+            setState(() {
+              _futureFood = Future.value(food);
+            });
           },
+          child: Scrollbar(
+            child: ListView.builder(
+              itemCount: data.days.length,
+              itemBuilder: (context, index) {
+                final day = data.days[index];
+
+                final tiles = day.courses.map((course) {
+                  if (course.index == null) {
+                    return ListTile(
+                      title: Text(course.name),
+                      subtitle: Text(course.type),
+                      leading: const SizedBox.shrink(),
+                    );
+                  }
+
+                  return RadioListTile(
+                    title: Text(course.name),
+                    subtitle: Text(course.type),
+                    value: course.index!,
+                    groupValue: _groupValues[index],
+                    onChanged: (_) {
+                      setState(() {
+                        _groupValues[index] = course.index!;
+                        _showFab = true;
+                      });
+                    },
+                  );
+                }).toList();
+
+                return Card(
+                  child: Column(children: [
+                    Text(
+                      DateFormat('EEEE d. M.').format(day.date),
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    Column(children: tiles),
+                  ]),
+                );
+              },
+            ),
+          ),
         ),
-      ),
+        if (_showFab)
+          FloatingActionButton.extended(
+            label: const Text('Send'),
+            icon: const Icon(Icons.check),
+            onPressed: () {},
+          ),
+      ],
     );
   }
 
