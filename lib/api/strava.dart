@@ -1,6 +1,7 @@
 import 'package:http/http.dart' show Client;
 import 'package:popelari/api/strava/auth.dart';
 import 'package:popelari/api/strava/get_food.dart';
+import 'package:popelari/api/strava/order_food.dart';
 import 'package:popelari/common/logger.dart';
 import 'package:popelari/common/storage.dart';
 
@@ -26,6 +27,19 @@ Future<Food> fetch(String canteenId, {String? username, String? password, String
   }
 
   return food;
+}
+
+void order(String canteenId, String sessionId, List<Day> orderedFood) async {
+  final client = Client();
+
+  try {
+    orderFood(client, canteenId, sessionId, orderedFood);
+  } catch (error) {
+    logger.e(error);
+    rethrow;
+  } finally {
+    client.close();
+  }
 }
 
 class Food {

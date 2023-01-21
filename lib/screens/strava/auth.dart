@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:popelari/api/strava.dart' as strava;
 import 'package:popelari/common/storage.dart';
 
@@ -111,14 +111,10 @@ class _AuthState extends State<Auth> {
       return showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(
-            'Error',
-            style: TextStyle(color: Theme.of(context).errorColor),
-          ),
-          content: Text(
-            'Your credentials are incorrect',
-            style: TextStyle(color: Theme.of(context).errorColor),
-          ),
+          title: const Text('Error'),
+          titleTextStyle: TextStyle(color: Theme.of(context).errorColor),
+          content: const Text('Your credentials are incorrect'),
+          contentTextStyle: TextStyle(color: Theme.of(context).errorColor),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),

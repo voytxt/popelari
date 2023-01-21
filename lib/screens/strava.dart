@@ -1,5 +1,6 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' show DateFormat;
 import 'package:popelari/api/strava.dart' as strava;
 import 'package:popelari/common/logger.dart';
 import 'package:popelari/common/storage.dart';
@@ -16,12 +17,13 @@ class _StravaState extends State<Strava> {
   List<int> _groupValues = [];
   bool _showFab = false;
 
+  late List<strava.Day> _initialDays;
   late Future<strava.Food?> _futureFood;
 
   @override
   void initState() {
     super.initState();
-    _futureFood = _getData();
+    _futureFood = _getFood();
   }
 
   @override
@@ -46,13 +48,11 @@ class _StravaState extends State<Strava> {
     );
   }
 
-  Future<strava.Food?> _getData() async {
+  Future<strava.Food?> _getFood() async {
     final canteenId = await storage.read(key: 'canteenId');
     final sessionId = await storage.read(key: 'sessionId');
 
-    if (canteenId == null || sessionId == null) {
-      return null;
-    }
+    if (canteenId == null || sessionId == null) return null;
 
     try {
       return await strava.fetch(canteenId, sessionId: sessionId);
@@ -73,6 +73,39 @@ class _StravaState extends State<Strava> {
     }
   }
 
+  void _orderFood() async {
+    final canteenId = await storage.read(key: 'canteenId');
+    final sessionId = await storage.read(key: 'sessionId');
+
+    List<strava.Day> orderedFood = [];
+
+    _initialDays.forEachIndexed((index, day) {
+      if (_groupValues[index] != day.orderedFoodIndex) {
+        orderedFood.add(strava.Day(day.date, day.courses, _groupValues[index]));
+      }
+    });
+
+    try {
+      strava.order(canteenId!, sessionId!, orderedFood);
+    } catch (error) {
+      logger.e(error);
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Food ordered'),
+        content: const Text('Your food was ordered successfully'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildLoading() {
     return const Center(child: CircularProgressIndicator());
   }
@@ -89,6 +122,7 @@ class _StravaState extends State<Strava> {
 
   Widget _buildData(strava.Food data) {
     if (_groupValues.isEmpty) {
+      _initialDays = data.days;
       _groupValues = data.days.map((day) => day.orderedFoodIndex).toList();
     }
 
@@ -98,10 +132,12 @@ class _StravaState extends State<Strava> {
         RefreshIndicator(
           triggerMode: RefreshIndicatorTriggerMode.anywhere,
           onRefresh: () async {
-            final food = await _getData();
+            final food = await _getFood();
 
             setState(() {
               _futureFood = Future.value(food);
+              _groupValues = [];
+              _showFab = false;
             });
           },
           child: Scrollbar(
@@ -150,7 +186,7 @@ class _StravaState extends State<Strava> {
           FloatingActionButton.extended(
             label: const Text('Send'),
             icon: const Icon(Icons.check),
-            onPressed: () {},
+            onPressed: _orderFood,
           ),
       ],
     );
