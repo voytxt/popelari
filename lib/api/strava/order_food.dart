@@ -2,13 +2,10 @@ import 'package:http/http.dart' show Client;
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:popelari/api/strava.dart';
 import 'package:popelari/api/strava/soaper.dart';
-import 'package:popelari/common/logger.dart';
 import 'package:xml/xml.dart' show XmlBuilder;
 
 void orderFood(Client client, String canteenId, String sessionId, List<Day> orderedFood) async {
   if (orderedFood.isEmpty) return;
-
-  logger.d(orderedFood.map((e) => '${e.date.day}.${e.date.month}. - ${e.orderedFoodIndex}').join(' | '));
 
   final builder = XmlBuilder();
   builder.element('VFPData', nest: () {
