@@ -1,6 +1,6 @@
 import 'package:http/http.dart' show Client;
 import 'package:popelari/common/logger.dart';
-import 'package:xml/xml.dart' show XmlBuilder, XmlDocument;
+import 'package:xml/xml.dart' show XmlBuilder, XmlDocument, XmlNullEntityMapping;
 
 Future<String> soap(Client client, String action, XmlBuilder body, String canteenId, {String? sessionId}) async {
   logger.i('Soaping $action 🧼');
@@ -26,7 +26,7 @@ Future<String> soap(Client client, String action, XmlBuilder body, String cantee
       'content-type': 'text/xml; charset=UTF-8',
       'soapaction': 'http://tempuri.org/WSiStravne/action/istravne.WS$action',
     },
-    body: builder.buildDocument().toXmlString(),
+    body: builder.buildDocument().toXmlString(entityMapping: const XmlNullEntityMapping()),
   );
 
   if (response.statusCode != 200) {

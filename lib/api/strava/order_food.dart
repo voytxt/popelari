@@ -1,11 +1,9 @@
-import 'dart:developer';
-
 import 'package:http/http.dart' show Client;
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:popelari/api/strava.dart';
 import 'package:popelari/api/strava/soaper.dart';
 import 'package:popelari/common/logger.dart';
-import 'package:xml/xml.dart';
+import 'package:xml/xml.dart' show XmlBuilder;
 
 void orderFood(Client client, String canteenId, String sessionId, List<Day> orderedFood) async {
   if (orderedFood.isEmpty) return;
@@ -38,7 +36,5 @@ void orderFood(Client client, String canteenId, String sessionId, List<Day> orde
     ..element('Vysledek')
     ..element('XMLObjednavky', nest: orders);
 
-  final response = await soap(client, 'UlozeniObjednavek', builder, canteenId, sessionId: sessionId);
-
-  log(response == '' ? 'yay' : 'nay');
+  await soap(client, 'UlozeniObjednavek', builder, canteenId, sessionId: sessionId);
 }
