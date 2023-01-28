@@ -25,16 +25,12 @@ dependencies:
   flutter:
     sdk: flutter
 
+  xml: ^6.2.2
   http: ^0.13.5
   intl: ^0.18.0
   logger: ^1.1.0
-
-  # Using older versions, because the new ones aren't compatible yet.
-  collection: ^1.16.0 # https://github.com/dart-lang/collection/issues/255
-  xml: ^6.1.0 # https://github.com/renggli/dart-xml/issues/157
-
-  # Latest version that uses Android SDK 31
-  flutter_secure_storage: ^5.1.2
+  collection: ^1.17.0
+  flutter_secure_storage: ^7.0.1
 
 dev_dependencies:
   # The "flutter_lints" package below contains a set of recommended lints to
