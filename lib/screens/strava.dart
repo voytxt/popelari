@@ -91,6 +91,7 @@ class _StravaState extends State<Strava> {
       logger.e(error);
     }
 
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

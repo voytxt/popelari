@@ -30,6 +30,8 @@ class _DevDrawerState extends State<DevDrawer> {
             title: const Text('View storage'),
             onTap: () async {
               final content = await storage.readAll();
+
+              if (!mounted) return;
               showDialog(
                 context: context,
                 builder: (_) => AlertDialog(
@@ -42,6 +44,8 @@ class _DevDrawerState extends State<DevDrawer> {
             title: const Text('Clear storage'),
             onTap: () async {
               await storage.deleteAll();
+
+              if (!mounted) return;
               showDialog(
                 context: context,
                 builder: (_) => const AlertDialog(

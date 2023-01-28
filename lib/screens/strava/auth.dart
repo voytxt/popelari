@@ -112,9 +112,9 @@ class _AuthState extends State<Auth> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),
-          titleTextStyle: TextStyle(color: Theme.of(context).errorColor),
+          titleTextStyle: TextStyle(color: Theme.of(context).colorScheme.error),
           content: const Text('Your credentials are incorrect'),
-          contentTextStyle: TextStyle(color: Theme.of(context).errorColor),
+          contentTextStyle: TextStyle(color: Theme.of(context).colorScheme.error),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),

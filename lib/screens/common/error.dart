@@ -8,7 +8,7 @@ class Error extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle red(TextStyle textStyle) => textStyle.copyWith(color: Theme.of(context).errorColor);
+    TextStyle red(TextStyle textStyle) => textStyle.copyWith(color: Theme.of(context).colorScheme.error);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
