@@ -14,10 +14,10 @@ class Strava extends StatefulWidget {
 }
 
 class _StravaState extends State<Strava> {
+  List<strava.Day> _initialDays = [];
   List<int> _groupValues = [];
   bool _showFab = false;
 
-  late List<strava.Day> _initialDays;
   late Future<strava.Food?> _futureFood;
 
   @override
@@ -99,7 +99,15 @@ class _StravaState extends State<Strava> {
         content: const Text('Your food was ordered successfully'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () async {
+              Navigator.pop(context);
+
+              final food = await _getFood();
+
+              setState(() {
+                _futureFood = Future.value(food);
+              });
+            },
             child: const Text('OK'),
           ),
         ],
@@ -122,9 +130,10 @@ class _StravaState extends State<Strava> {
   }
 
   Widget _buildData(strava.Food data) {
-    if (_groupValues.isEmpty) {
+    if (const DeepCollectionEquality().equals(_initialDays, data.days) == false) {
       _initialDays = data.days;
       _groupValues = data.days.map((day) => day.orderedFoodIndex).toList();
+      _showFab = false;
     }
 
     return Stack(
@@ -137,8 +146,6 @@ class _StravaState extends State<Strava> {
 
             setState(() {
               _futureFood = Future.value(food);
-              _groupValues = [];
-              _showFab = false;
             });
           },
           child: Scrollbar(
@@ -161,9 +168,10 @@ class _StravaState extends State<Strava> {
                     subtitle: Text(course.type),
                     value: course.index!,
                     groupValue: _groupValues[index],
-                    onChanged: (_) {
+                    toggleable: true,
+                    onChanged: (value) {
                       setState(() {
-                        _groupValues[index] = course.index!;
+                        _groupValues[index] = value ?? -1;
                         _showFab = true;
                       });
                     },
