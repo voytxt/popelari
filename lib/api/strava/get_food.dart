@@ -25,8 +25,10 @@ Future<Food> getFood(Client client, String canteenId, String sessionId) async {
     final name = courseXml.getElement('nazevjidelnicku')!.innerText;
     final index = int.tryParse(courseXml.getElement('druh')!.innerText); // null if food can't be ordered
     final isOrdered = courseXml.getElement('pocet')!.innerText == '1';
+    final allergens = courseXml.getElement('popis_al')!.innerText;
+    final orderDeadline = index == null ? null : DateTime.parse(courseXml.getElement('datcas_kon')!.innerText); // null if can't be ordered
 
-    final course = Course(type, name, index);
+    final course = Course(type, name, index, allergens, orderDeadline);
 
     final dayIndex = food.days.indexWhere((element) => element.date == date);
 
@@ -38,6 +40,8 @@ Future<Food> getFood(Client client, String canteenId, String sessionId) async {
 
     if (isOrdered) food.days[dayIndex].orderedFoodIndex = index!;
   }
+
+  // log(food.days.map((e) => e.courses.map((e) => e.orderDeadline.toString()).join(', ')).join(' || '));
 
   return food;
 }

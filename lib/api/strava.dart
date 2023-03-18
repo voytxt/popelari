@@ -60,6 +60,8 @@ class Course {
   final String type;
   final String name;
   final int? index;
+  final String allergens;
+  final DateTime? orderDeadline;
 
-  Course(this.type, this.name, this.index);
+  Course(this.type, this.name, this.index, this.allergens, this.orderDeadline);
 }

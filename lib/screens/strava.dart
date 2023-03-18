@@ -160,6 +160,28 @@ class _StravaState extends State<Strava> {
                       title: Text(course.name),
                       subtitle: Text(course.type),
                       leading: const SizedBox.shrink(),
+                      onTap: () {
+                        // TODO: turn this into an actual screen
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Food info - ${course.type}'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('Allergens', style: Theme.of(context).textTheme.bodyMedium),
+                                Text(course.allergens),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     );
                   }
 
@@ -179,13 +201,16 @@ class _StravaState extends State<Strava> {
                 }).toList();
 
                 return Card(
-                  child: Column(children: [
-                    Text(
-                      DateFormat('EEEE d. M.').format(day.date),
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Column(children: tiles),
-                  ]),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: Column(children: [
+                      Text(
+                        DateFormat('EEEE d. M.').format(day.date),
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      Column(children: tiles),
+                    ]),
+                  ),
                 );
               },
             ),
