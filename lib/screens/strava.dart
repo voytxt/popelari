@@ -155,48 +155,30 @@ class _StravaState extends State<Strava> {
                 final day = data.days[index];
 
                 final tiles = day.courses.map((course) {
-                  if (course.index == null) {
-                    return ListTile(
-                      title: Text(course.name),
-                      subtitle: Text(course.type),
-                      leading: const SizedBox.shrink(),
-                      onTap: () {
-                        // TODO: turn this into an actual screen
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Food info - ${course.type}'),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text('Allergens', style: Theme.of(context).textTheme.bodyMedium),
-                                Text(course.allergens),
-                              ],
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text('OK'),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  }
+                  void handleTap() => Navigator.pushNamed(context, '/strava/food', arguments: course);
 
-                  return RadioListTile(
-                    title: Text(course.name),
-                    subtitle: Text(course.type),
-                    value: course.index!,
-                    groupValue: _groupValues[index],
-                    toggleable: true,
-                    onChanged: (value) {
-                      setState(() {
-                        _groupValues[index] = value ?? -1;
-                        _showFab = true;
-                      });
-                    },
+                  return GestureDetector(
+                    onLongPress: handleTap,
+                    child: (course.index == null)
+                        ? ListTile(
+                            title: Text(course.name),
+                            subtitle: Text(course.type),
+                            leading: const SizedBox.shrink(),
+                            onTap: handleTap,
+                          )
+                        : RadioListTile(
+                            title: Text(course.name),
+                            subtitle: Text(course.type),
+                            value: course.index!,
+                            groupValue: _groupValues[index],
+                            toggleable: true,
+                            onChanged: (value) {
+                              setState(() {
+                                _groupValues[index] = value ?? -1;
+                                _showFab = true;
+                              });
+                            },
+                          ),
                   );
                 }).toList();
 

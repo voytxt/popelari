@@ -4,6 +4,7 @@ import 'package:popelari/screens/grades.dart';
 import 'package:popelari/screens/overview.dart';
 import 'package:popelari/screens/strava.dart';
 import 'package:popelari/screens/strava/auth.dart';
+import 'package:popelari/screens/strava/food.dart';
 import 'package:popelari/screens/timetable.dart';
 
 void main() {
@@ -13,6 +14,7 @@ void main() {
     routes: {
       '/': (context) => const Main(),
       '/strava/auth': (context) => const Auth(),
+      '/strava/food': (context) => const Food(),
     },
     theme: ThemeData(
       useMaterial3: true,

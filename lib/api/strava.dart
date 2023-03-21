@@ -59,9 +59,10 @@ class Day {
 class Course {
   final String type;
   final String name;
+  final DateTime date;
   final int? index;
   final String allergens;
   final DateTime? orderDeadline;
 
-  Course(this.type, this.name, this.index, this.allergens, this.orderDeadline);
+  Course(this.type, this.name, this.date, this.index, this.allergens, this.orderDeadline);
 }
