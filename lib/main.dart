@@ -54,7 +54,7 @@ class _MainState extends State<Main> {
         ),
       ),
 
-      // M2 for now, M3: https://github.com/flutter/flutter/issues/103551
+      // TODO: move dev drawer to settings, have an actual navigation drawer instead
       drawer: const DevDrawer(),
 
       bottomNavigationBar: NavigationBar(
