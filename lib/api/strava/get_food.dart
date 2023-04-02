@@ -25,7 +25,8 @@ Future<Food> getFood(Client client, String canteenId, String sessionId) async {
     final name = courseXml.getElement('nazevjidelnicku')!.innerText;
     final index = int.tryParse(courseXml.getElement('druh')!.innerText); // null if food can't be ordered
     final isOrdered = courseXml.getElement('pocet')!.innerText == '1';
-    final allergens = courseXml.getElement('popis_al')!.innerText.replaceAll(RegExp(r'-{2,}\s'), '').replaceAll(RegExp(r'\s*-(?!\s)'), ' ');
+    final allergens =
+        courseXml.getElement('popis_al')!.innerText.replaceAll(RegExp(r'-{2,}\s+'), '').replaceAll(RegExp(r'\s*-(?!\s)'), ' ');
     final orderDeadline = index == null ? null : DateTime.parse(courseXml.getElement('datcas_kon')!.innerText); // null if can't be ordered
 
     final course = Course(type, name, date, index, allergens, orderDeadline);
