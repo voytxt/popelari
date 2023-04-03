@@ -29,11 +29,11 @@ Future<Food> fetch(String canteenId, {String? username, String? password, String
   return food;
 }
 
-void order(String canteenId, String sessionId, List<Day> orderedFood) async {
+Future<void> order(String canteenId, String sessionId, List<Day> orderedFood) async {
   final client = Client();
 
   try {
-    orderFood(client, canteenId, sessionId, orderedFood);
+    await orderFood(client, canteenId, sessionId, orderedFood);
   } catch (error) {
     logger.e(error);
     rethrow;
@@ -43,26 +43,26 @@ void order(String canteenId, String sessionId, List<Day> orderedFood) async {
 }
 
 class Food {
-  final List<Day> days;
-
   Food(this.days);
+
+  final List<Day> days;
 }
 
 class Day {
+  Day(this.date, this.courses, this.orderedFoodIndex);
+
   final DateTime date;
   final List<Course> courses;
   late int orderedFoodIndex;
-
-  Day(this.date, this.courses, this.orderedFoodIndex);
 }
 
 class Course {
+  Course(this.type, this.name, this.date, this.index, this.allergens, this.orderDeadline);
+
   final String type;
   final String name;
   final DateTime date;
   final int? index;
   final String allergens;
   final DateTime? orderDeadline;
-
-  Course(this.type, this.name, this.date, this.index, this.allergens, this.orderDeadline);
 }

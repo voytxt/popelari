@@ -35,7 +35,7 @@ class _AuthState extends State<Auth> {
         title: const Text('Log in to Strava'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(children: [
@@ -45,26 +45,26 @@ class _AuthState extends State<Auth> {
               keyboard: TextInputType.number,
               filter: [FilteringTextInputFormatter.digitsOnly],
             ),
-            const SizedBox(height: 10.0),
+            const SizedBox(height: 10),
             _buildTextFormField(
               _usernameController,
               'username',
             ),
-            const SizedBox(height: 10.0),
+            const SizedBox(height: 10),
             _buildTextFormField(
               _passwordController,
               'password',
               hideText: true,
             ),
-            const SizedBox(height: 10.0),
+            const SizedBox(height: 10),
             CheckboxListTile(
               title: const Text('Remember me'),
               value: _rememberMe,
               onChanged: (value) => setState(() => _rememberMe = value!),
             ),
-            const SizedBox(height: 20.0),
+            const SizedBox(height: 20),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30.0)),
+              style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30)),
               onPressed: _handlePress,
               child: const Text('Sign in'),
             ),
@@ -96,7 +96,7 @@ class _AuthState extends State<Auth> {
     );
   }
 
-  void _handlePress() async {
+  Future<void> _handlePress() async {
     if (!_formKey.currentState!.validate()) return;
 
     late strava.Food food;

@@ -44,7 +44,7 @@ class _MainState extends State<Main> {
       ),
       body: SizedBox.expand(
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(12),
           child: [
             const Overview(),
             const Strava(),

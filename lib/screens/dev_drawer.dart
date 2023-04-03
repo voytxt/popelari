@@ -27,12 +27,13 @@ class _DevDrawerState extends State<DevDrawer> {
             final content = await storage.readAll();
 
             if (!mounted) return;
-            showDialog(
-              context: context,
-              builder: (_) => AlertDialog(
-                content: Text(const JsonEncoder.withIndent('  ').convert(content)),
-              ),
-            );
+            await showDialog<void>(
+                context: context,
+                builder: (_) {
+                  return AlertDialog(
+                    content: Text(const JsonEncoder.withIndent('  ').convert(content)),
+                  );
+                });
           },
         ),
         ListTile(
@@ -41,7 +42,7 @@ class _DevDrawerState extends State<DevDrawer> {
             await storage.deleteAll();
 
             if (!mounted) return;
-            showDialog(
+            await showDialog<void>(
               context: context,
               builder: (_) => const AlertDialog(
                 content: Text('Deleted'),

@@ -17,7 +17,7 @@ Future<Food> getFood(Client client, String canteenId, String sessionId) async {
     throw Exception('Failed to parse food, invalid xml: $responseXml');
   }
 
-  Food food = Food([]);
+  final food = Food([]);
 
   for (final courseXml in coursesXml) {
     final date = DateTime.parse(courseXml.getElement('datum')!.innerText);
@@ -41,8 +41,6 @@ Future<Food> getFood(Client client, String canteenId, String sessionId) async {
 
     if (isOrdered) food.days[dayIndex].orderedFoodIndex = index!;
   }
-
-  // log(food.days.map((e) => e.courses.map((e) => e.orderDeadline.toString()).join(', ')).join(' || '));
 
   return food;
 }

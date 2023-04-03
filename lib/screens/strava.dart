@@ -73,11 +73,11 @@ class _StravaState extends State<Strava> {
     }
   }
 
-  void _orderFood() async {
+  Future<void> _orderFood() async {
     final canteenId = await storage.read(key: 'canteenId');
     final sessionId = await storage.read(key: 'sessionId');
 
-    List<strava.Day> orderedFood = [];
+    final orderedFood = <strava.Day>[];
 
     _initialDays.forEachIndexed((index, day) {
       if (_groupValues[index] != day.orderedFoodIndex) {
@@ -86,13 +86,13 @@ class _StravaState extends State<Strava> {
     });
 
     try {
-      strava.order(canteenId!, sessionId!, orderedFood);
+      await strava.order(canteenId!, sessionId!, orderedFood);
     } catch (error) {
       logger.e(error);
     }
 
     if (!mounted) return;
-    showDialog(
+    await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Food ordered'),
@@ -186,7 +186,7 @@ class _StravaState extends State<Strava> {
 
                 return Card(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Column(children: [
                       Text(
                         DateFormat('EEEE d. M.').format(day.date),
@@ -212,9 +212,9 @@ class _StravaState extends State<Strava> {
 
   Widget _buildLogInButton(BuildContext context) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30.0)),
+      style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30)),
       onPressed: () async {
-        strava.Food? food = await Navigator.pushNamed(context, '/strava/auth') as strava.Food?;
+        final food = await Navigator.pushNamed(context, '/strava/auth') as strava.Food?;
 
         if (food != null) {
           setState(() {
