@@ -159,7 +159,7 @@ class _StravaState extends State<Strava> {
 
                   return GestureDetector(
                     onLongPress: handleTap,
-                    child: (course.index == null)
+                    child: (course.index == null || course.orderDeadline!.isBefore(DateTime.now()))
                         ? ListTile(
                             title: Text(course.name),
                             subtitle: Text(course.type),
@@ -172,14 +172,12 @@ class _StravaState extends State<Strava> {
                             value: course.index!,
                             groupValue: _groupValues[index],
                             toggleable: true,
-                            onChanged: course.orderDeadline!.isBefore(DateTime.now())
-                                ? null
-                                : (value) {
-                                    setState(() {
-                                      _groupValues[index] = (value as int?) ?? -1;
-                                      _showFab = true;
-                                    });
-                                  },
+                            onChanged: (value) {
+                              setState(() {
+                                _groupValues[index] = value ?? -1;
+                                _showFab = true;
+                              });
+                            },
                           ),
                   );
                 }).toList();
