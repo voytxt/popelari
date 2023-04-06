@@ -92,27 +92,18 @@ class _StravaState extends State<Strava> {
     }
 
     if (!mounted) return;
-    await showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Food ordered'),
-        content: const Text('Your food was ordered successfully'),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
 
-              final food = await _getFood();
-
-              setState(() {
-                _futureFood = Future.value(food);
-              });
-            },
-            child: const Text('OK'),
-          ),
-        ],
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Your food has been ordered successfully'),
       ),
     );
+
+    final food = await _getFood();
+
+    setState(() {
+      _futureFood = Future.value(food);
+    });
   }
 
   Widget _buildLoading() {
