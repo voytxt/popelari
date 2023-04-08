@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:popelari/api/strava.dart' as strava;
 import 'package:popelari/common/storage.dart';
+import 'package:popelari/screens/common/space.dart';
 
 class Auth extends StatefulWidget {
   const Auth({super.key});
@@ -31,72 +32,53 @@ class _AuthState extends State<Auth> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Log in to Strava'),
-      ),
+      appBar: AppBar(title: const Text('Popeláři ~ Strava ~ Log in')),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Form(
           key: _formKey,
-          child: Column(children: [
-            _buildTextFormField(
-              _canteenIdController,
-              'canteen number',
-              keyboard: TextInputType.number,
-              filter: [FilteringTextInputFormatter.digitsOnly],
-            ),
-            const SizedBox(height: 10),
-            _buildTextFormField(
-              _usernameController,
-              'username',
-            ),
-            const SizedBox(height: 10),
-            _buildTextFormField(
-              _passwordController,
-              'password',
-              hideText: true,
-            ),
-            const SizedBox(height: 10),
-            CheckboxListTile(
-              title: const Text('Remember me'),
-              value: _rememberMe,
-              onChanged: (value) => setState(() => _rememberMe = value!),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30)),
-              onPressed: _handlePress,
-              child: const Text('Sign in'),
-            ),
-          ]),
+          child: Column(
+            children: spaceBeforeEach(10, [
+              _buildTextFormField(_canteenIdController, 'canteen number', isNumerical: true),
+              _buildTextFormField(_usernameController, 'username'),
+              _buildTextFormField(_passwordController, 'password', isPassword: true, isLast: true),
+              CheckboxListTile(
+                value: _rememberMe,
+                onChanged: (value) => setState(() => _rememberMe = value!),
+                title: const Text('Remember me'),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(40)),
+                onPressed: _handleLogIn,
+                child: const Text('Log in'),
+              ),
+            ]),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildTextFormField(
+  TextFormField _buildTextFormField(
     TextEditingController controller,
     String label, {
-    TextInputType? keyboard,
-    List<TextInputFormatter>? filter,
-    bool hideText = false,
+    bool isNumerical = false,
+    bool isPassword = false,
+    bool isLast = false,
   }) {
     return TextFormField(
       controller: controller,
-      keyboardType: keyboard,
-      inputFormatters: filter,
-      obscureText: hideText,
-      decoration: InputDecoration(
-        border: const OutlineInputBorder(),
-        labelText: toBeginningOfSentenceCase(label),
-      ),
-      validator: (value) {
-        return value == null || value.isEmpty ? 'Please enter your $label' : null;
-      },
+      keyboardType: isNumerical ? TextInputType.number : null,
+      inputFormatters: isNumerical ? [FilteringTextInputFormatter.digitsOnly] : null,
+      obscureText: isPassword,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (value) => value == null || value.isEmpty ? 'Please enter your $label' : null,
+      decoration: InputDecoration(border: const OutlineInputBorder(), labelText: toBeginningOfSentenceCase(label)),
+      textInputAction: isLast ? TextInputAction.done : TextInputAction.next,
     );
   }
 
-  Future<void> _handlePress() async {
+  Future<void> _handleLogIn() async {
     if (!_formKey.currentState!.validate()) return;
 
     late strava.Food food;
@@ -107,14 +89,12 @@ class _AuthState extends State<Auth> {
         username: _usernameController.text,
         password: _passwordController.text,
       );
-    } catch (error) {
+    } catch (_) {
       return showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),
-          titleTextStyle: TextStyle(color: Theme.of(context).colorScheme.error),
           content: const Text('Your credentials are incorrect'),
-          contentTextStyle: TextStyle(color: Theme.of(context).colorScheme.error),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),

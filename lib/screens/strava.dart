@@ -115,6 +115,7 @@ class _StravaState extends State<Strava> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Error(error: error.toString(), stackTrace: stackTrace.toString()),
+        const SizedBox(height: 8),
         _buildLogInButton(context),
       ],
     );
@@ -200,8 +201,8 @@ class _StravaState extends State<Strava> {
   }
 
   Widget _buildLogInButton(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30)),
+    return FilledButton(
+      style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30)),
       onPressed: () async {
         final food = await Navigator.pushNamed(context, '/strava/auth') as strava.Food?;
 
