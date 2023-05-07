@@ -25,7 +25,7 @@ class _GradesState extends State<Grades> {
       future: _futureGrades,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return _buildLoading();
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
@@ -41,21 +41,18 @@ class _GradesState extends State<Grades> {
     );
   }
 
-  Widget _buildLoading() {
-    return const Center(child: CircularProgressIndicator());
-  }
-
   Widget _buildData(GradesApi data) {
     return Scrollbar(
       child: ListView(
-        children: data.subjects.map((subject) {
-          return Card(
-            child: ListTile(
-              title: Text(subject.name),
-              trailing: Text(subject.averageGrade, style: Theme.of(context).textTheme.titleLarge),
-            ),
-          );
-        }).toList(),
+        children: [
+          for (final subject in data.subjects)
+            Card(
+              child: ListTile(
+                title: Text(subject.name),
+                trailing: Text(subject.averageGrade, style: Theme.of(context).textTheme.titleLarge),
+              ),
+            )
+        ],
       ),
     );
   }
