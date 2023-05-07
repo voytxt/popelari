@@ -5,6 +5,7 @@ import 'package:popelari/api/strava.dart' as strava;
 import 'package:popelari/common/logger.dart';
 import 'package:popelari/common/storage.dart';
 import 'package:popelari/screens/common/error.dart';
+import 'package:popelari/screens/common/space.dart';
 
 class Strava extends StatefulWidget {
   const Strava({super.key});
@@ -111,13 +112,11 @@ class _StravaState extends State<Strava> {
   }
 
   Widget _buildError(Object error, StackTrace stackTrace) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Error(error: error.toString(), stackTrace: stackTrace.toString()),
-        const SizedBox(height: 8),
+    return ListView(
+      children: spaceBetween(8, [
         _buildLogInButton(context),
-      ],
+        Error(error: error.toString(), stackTrace: stackTrace.toString()),
+      ]),
     );
   }
 

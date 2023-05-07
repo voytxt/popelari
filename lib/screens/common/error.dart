@@ -11,17 +11,14 @@ class Error extends StatelessWidget {
   Widget build(BuildContext context) {
     TextStyle red(TextStyle textStyle) => textStyle.copyWith(color: Theme.of(context).colorScheme.error);
 
-    return Expanded(
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: spaceBetween(10, [
-            Text('Error', style: red(Theme.of(context).textTheme.headlineLarge!)),
-            Text(error, style: red(Theme.of(context).textTheme.bodyLarge!)),
-            Text(stackTrace, style: red(Theme.of(context).textTheme.bodySmall!)),
-          ]),
-        ),
-      ),
+    return ListView(
+      shrinkWrap: true,
+      physics: const ClampingScrollPhysics(), // allow scrolling inside another Listview
+      children: spaceBetween(10, [
+        Text('Error', style: red(Theme.of(context).textTheme.headlineLarge!)),
+        Text(error, style: red(Theme.of(context).textTheme.bodyLarge!)),
+        Text(stackTrace, style: red(Theme.of(context).textTheme.bodySmall!)),
+      ]),
     );
   }
 }
