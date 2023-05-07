@@ -97,6 +97,7 @@ class _StravaState extends State<Strava> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Your food has been ordered successfully'),
+        behavior: SnackBarBehavior.floating,
       ),
     );
 
