@@ -150,8 +150,9 @@ class _StravaState extends State<Strava> {
                   void handleTap() => Navigator.pushNamed(context, '/strava/food', arguments: course);
 
                   return GestureDetector(
+                    onTap: handleTap,
                     onLongPress: handleTap,
-                    child: (course.index == null || course.orderDeadline!.isBefore(DateTime.now()))
+                    child: (course.index == null)
                         ? ListTile(
                             title: Text(course.name),
                             subtitle: Text(course.type),
@@ -164,12 +165,14 @@ class _StravaState extends State<Strava> {
                             value: course.index!,
                             groupValue: _groupValues[index],
                             toggleable: true,
-                            onChanged: (value) {
-                              setState(() {
-                                _groupValues[index] = value ?? -1;
-                                _showFab = true;
-                              });
-                            },
+                            onChanged: course.orderDeadline!.isBefore(DateTime.now())
+                                ? null
+                                : (value) {
+                                    setState(() {
+                                      _groupValues[index] = (value as int?) ?? -1;
+                                      _showFab = true;
+                                    });
+                                  },
                           ),
                   );
                 }).toList();
