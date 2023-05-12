@@ -1,6 +1,6 @@
 import 'package:http/http.dart' show Client;
 import 'package:popelari/common/logger.dart';
-import 'package:xml/xml.dart' show XmlBuilder, XmlDocument, XmlNullEntityMapping;
+import 'package:xml/xml.dart';
 
 Future<String> soap(Client client, String action, XmlBuilder body, String canteenId, {String? sessionId}) async {
   logger.i('Soaping $action 🧼');
